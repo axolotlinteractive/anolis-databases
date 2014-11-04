@@ -1,4 +1,4 @@
-package com.axolotlinteractive.databases.databaseobject;
+package com.axolotlinteractive.phishyphramework.databaseobject;
 
 import android.database.sqlite.SQLiteDatabase;
 

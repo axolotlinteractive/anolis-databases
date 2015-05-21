@@ -59,6 +59,45 @@ public class DatabaseHelper{
         return toList(c);
     }
 
+    /**
+     * gets a table when we want to run a special query
+     * @param table the table we are querying
+     * @param specialWhere the special query that we cannot simply pass into an array
+     * @return an entire list of rows in HashMap form
+     */
+    public List<HashMap<String,String>> getTableSpecialWhere(String table,String specialWhere){
+        return getTableSpecialWhere(table,null,new String[]{},specialWhere);
+    }
+    /**
+     * gets a table where one column can be easily added to a where, but we also need to run a special query
+     * @param table the table we are querying
+     * @param column the column that we want to get
+     * @param value the value that we want to be in that column
+     * @param specialWhere the special where that we need to have included in the query
+     * @return an entire list of rows in HashMap form
+     */
+    public List<HashMap<String,String>> getTableSpecialWhere(String table,String column, String value, String specialWhere){
+        return getTableSpecialWhere(table,new String[]{column},new String[]{value},specialWhere);
+    }
+    /**
+     * gets an table where multiple columns can be easily added to a where, and where we also need to run a special query
+     * @param table the table we are querying
+     * @param whereColumns the columns that we want to get
+     * @param whereValues the values that we want to be in the columns
+     * @param specialWhere the special where that we need to have included in the query
+     * @return an entire list of rows in HashMap form
+     */
+    public List<HashMap<String,String>> getTableSpecialWhere(String table,String[] whereColumns, String[] whereValues, String specialWhere){
+        String where=null;
+        if(whereColumns!=null)where=parameterizeWhere(whereColumns);
+        if(where!=null&&specialWhere!=null)where+=" AND ";
+        else if(specialWhere!=null) where="";
+        if(specialWhere==null)specialWhere="";
+        where+=specialWhere;
+        return getTable(table,where,whereValues);
+    }
+
+
     public List<HashMap<String,String>> getTableRaw(String query){
         Cursor c = mDatabase.rawQuery(query, null);
 
@@ -161,7 +200,7 @@ public class DatabaseHelper{
         return getRow(table, new String[]{name}, new String[]{value});
     }
     public HashMap<String,String> getRow(String table, String[] whereColumns, String[] whereValues){
-        Cursor c = mDatabase.query(table, null, getParameterizedWhere(whereColumns), whereValues,null, null, null);
+        Cursor c = mDatabase.query(table, null, parameterizeWhere(whereColumns), whereValues,null, null, null);
 
         List<HashMap<String, String>> rows = toList(c);
         return rows.size() > 0 ? rows.get(0) : null;
@@ -171,7 +210,7 @@ public class DatabaseHelper{
      * @param columns
      * @return
      */
-    private String getParameterizedWhere(String[] columns){
+    private String parameterizeWhere(String[] columns){
         String column="`";
         for(int i=0;i<columns.length;i++){
             column+=columns[i];

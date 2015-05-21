@@ -1,4 +1,4 @@
-package com.axolotlinteractive.phishyphramework.databaseobject;
+package org.anolis.databases;
 
 /**
  * Created by brycemeyer on 11/2/14.

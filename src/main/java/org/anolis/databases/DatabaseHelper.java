@@ -49,9 +49,11 @@ public class DatabaseHelper{
     public List<HashMap<String,String>> getTableWhere(String table,String[] whereColumns,String[] whereArgs){
         String where="";
         for(String column:whereColumns){
-            where+=column+"=? ";
+            where+="`" + column + "`=? AND ";
         }
-        return getTable(table,where,whereColumns);
+        if(!where.equals(""))
+            where = where.substring(0, where.length() - 4);
+        return getTable("`" + table + "`", where, whereArgs);
     }
     public	List<HashMap<String,String>> getTable(String table,String where,String[] whereArgs){
         Cursor c=mDatabase.query(table, null,where,whereArgs, null,null, null);
@@ -66,7 +68,7 @@ public class DatabaseHelper{
      * @return an entire list of rows in HashMap form
      */
     public List<HashMap<String,String>> getTableSpecialWhere(String table,String specialWhere){
-        return getTableSpecialWhere(table,null,new String[]{},specialWhere);
+        return getTableSpecialWhere(table, null, new String[]{}, specialWhere);
     }
     /**
      * gets a table where one column can be easily added to a where, but we also need to run a special query
@@ -77,7 +79,7 @@ public class DatabaseHelper{
      * @return an entire list of rows in HashMap form
      */
     public List<HashMap<String,String>> getTableSpecialWhere(String table,String column, String value, String specialWhere){
-        return getTableSpecialWhere(table,new String[]{column},new String[]{value},specialWhere);
+        return getTableSpecialWhere(table, new String[]{column}, new String[]{value}, specialWhere);
     }
     /**
      * gets an table where multiple columns can be easily added to a where, and where we also need to run a special query
@@ -89,12 +91,12 @@ public class DatabaseHelper{
      */
     public List<HashMap<String,String>> getTableSpecialWhere(String table,String[] whereColumns, String[] whereValues, String specialWhere){
         String where=null;
-        if(whereColumns!=null)where=parameterizeWhere(whereColumns);
+        if(whereColumns!=null)where=getParameterizedWhere(whereColumns);
         if(where!=null&&specialWhere!=null)where+=" AND ";
         else if(specialWhere!=null) where="";
         if(specialWhere==null)specialWhere="";
         where+=specialWhere;
-        return getTable(table,where,whereValues);
+        return getTable(table, where, whereValues);
     }
 
 
@@ -151,11 +153,11 @@ public class DatabaseHelper{
         for(int i=0;i<values.length;i++){
             updateVal.put(columns[i],values[i]);
         }
-        return mDatabase.update(table, updateVal, whereField+"= ?", new String[]{whereValue});
+        return mDatabase.update("`" + table + "`", updateVal, whereField + "= ?", new String[]{whereValue});
     }
 
     public long insert(String table,String column,String value){
-        return insert(table,new String[]{column},new String[]{value});
+        return insert(table, new String[]{column}, new String[]{value});
     }
     /**
      * this method builds and executes insert statements
@@ -173,7 +175,7 @@ public class DatabaseHelper{
         for(int i=0;i<columns.length;i++){
             data.put(columns[i], values[i]);
         }
-        return mDatabase.insert(table, null, data);
+        return mDatabase.insert("`" + table + "`", null, data);
     }
 
     public HashMap<String,String> getLastEntry(String table){
@@ -200,7 +202,7 @@ public class DatabaseHelper{
         return getRow(table, new String[]{name}, new String[]{value});
     }
     public HashMap<String,String> getRow(String table, String[] whereColumns, String[] whereValues){
-        Cursor c = mDatabase.query(table, null, parameterizeWhere(whereColumns), whereValues,null, null, null);
+        Cursor c = mDatabase.query("`" + table + "`", null, getParameterizedWhere(whereColumns), whereValues,null, null, null);
 
         List<HashMap<String, String>> rows = toList(c);
         return rows.size() > 0 ? rows.get(0) : null;
@@ -210,7 +212,7 @@ public class DatabaseHelper{
      * @param columns
      * @return
      */
-    private String parameterizeWhere(String[] columns){
+    private String getParameterizedWhere(String[] columns){
         String column="`";
         for(int i=0;i<columns.length;i++){
             column+=columns[i];
@@ -237,8 +239,13 @@ public class DatabaseHelper{
         return r;
     }
 
+    public boolean delete(String table)
+    {
+        return mDatabase.delete(table, null, null) > 0;
+    }
+
     public boolean delete(String table, String column, String value){
-        return mDatabase.delete(table, column+"=?", new String[]{value}) > 0;
+        return mDatabase.delete("`" + table + "`", column+"=?", new String[]{value}) > 0;
     }
 
     private static final class Helper extends SQLiteOpenHelper

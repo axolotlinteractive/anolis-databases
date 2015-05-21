@@ -1,8 +1,7 @@
-package com.axolotlinteractive.phishyphramework.databaseobject;
+package org.anolis.databases;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 

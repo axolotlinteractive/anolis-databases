@@ -173,7 +173,7 @@ public class DatabaseHelper{
         }
         ContentValues data=new ContentValues();
         for(int i=0;i<columns.length;i++){
-            data.put(columns[i], values[i]);
+            data.put("`" + columns[i] + "`", values[i]);
         }
         return mDatabase.insert("`" + table + "`", null, data);
     }

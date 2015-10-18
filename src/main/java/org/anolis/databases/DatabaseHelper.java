@@ -178,10 +178,15 @@ public class DatabaseHelper{
         return mDatabase.insert("`" + table + "`", null, data);
     }
 
+    /**
+     * Queries the database for the last entry in a table
+     * @param table String the table being queried
+     * @return HashMap the last entry in the queried table based on the default primary id
+     */
     public HashMap<String,String> getLastEntry(String table){
         Cursor c=mDatabase.query( table, null, null, null, null, null, "id DESC", "1");
 
-        while(c.moveToNext()){
+        if(c.moveToNext()){
             HashMap<String,String> data=new HashMap<String,String>();
             for(int i=0;i<c.getColumnCount();i++){
                 data.put(c.getColumnName(i), c.getString(i));

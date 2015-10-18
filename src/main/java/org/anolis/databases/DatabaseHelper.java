@@ -41,10 +41,10 @@ public class DatabaseHelper{
      * 	each row is returned inside a HashMap
      */
     public List<HashMap<String,String>> getTable(String table){
-        return getTable(table,null,null);
+        return getTable(table, null, null);
     }
     public List<HashMap<String,String>> getTableWhere(String table,String whereColumn,String whereArg){
-        return getTableWhere(table,new String[]{whereColumn},new String[]{whereArg});
+        return getTableWhere(table, new String[]{whereColumn}, new String[]{whereArg});
     }
     public List<HashMap<String,String>> getTableWhere(String table,String[] whereColumns,String[] whereArgs){
         String where="";
@@ -125,14 +125,14 @@ public class DatabaseHelper{
      * @param value the value we want to update the column with
      */
     public int update(String table,String whereValue,String column,String value){
-        return update(table,whereValue,new String[]{column},new String[]{value});
+        return update(table, whereValue, new String[]{column}, new String[]{value});
     }
 
     public int update(String table,String whereValue,String[] column,String[] value){
-        return update(table,"id",whereValue,column,value);
+        return update(table, "id", whereValue, column, value);
     }
     public int update(String table,String whereField,String whereValue,String column,String value)throws SQLException{
-        return update(table,whereField,whereValue,new String[]{column},new String[]{value});
+        return update(table, whereField, whereValue, new String[]{column}, new String[]{value});
     }
 
     /**
@@ -183,8 +183,18 @@ public class DatabaseHelper{
      * @param table String the table being queried
      * @return HashMap the last entry in the queried table based on the default primary id
      */
-    public HashMap<String,String> getLastEntry(String table){
-        Cursor c=mDatabase.query( table, null, null, null, null, null, "id DESC", "1");
+    public HashMap<String,String> getLastEntry(String table) {
+        return this.getLastEntry(table, "id");
+    }
+
+    /**
+     * Queries the database for the last entry in a table
+     * @param table String the table being queried
+     * @param id String the id we are sorting by
+     * @return HashMap the last entry in the queried table based on the passed in id
+     */
+    public HashMap<String,String> getLastEntry(String table, String id){
+        Cursor c=mDatabase.query( table, null, null, null, null, null, id + " DESC", "1");
 
         if(c.moveToNext()){
             HashMap<String,String> data=new HashMap<String,String>();
